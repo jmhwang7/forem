@@ -36,14 +36,12 @@ services:
     envVars:
       - fromGroup: rails
       - key: REDIS_HOST
-        fromService:
+        fromRedis:
           name: redis
-          type: pserv
           property: host
       - key: REDIS_PORT
-        fromService:
+        fromRedis:
           name: redis
-          type: pserv
           property: port
 
       - key: ELASTICSEARCH_HOST
