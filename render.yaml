@@ -1,15 +1,5 @@
 services:
   - type: pserv
-    name: redis
-    env: docker
-    autoDeploy: false
-    repo: https://github.com/render-examples/redis.git
-    disk:
-      name: data
-      mountPath: /var/lib/redis
-      sizeGB: 10
-
-  - type: pserv
     name: elasticsearch
     dockerfilePath: ./elasticsearch/Dockerfile
     dockerContext: ./elasticsearch
@@ -21,20 +11,20 @@ services:
       sizeGB: 10
     autoDeploy: false # so ES does not restart on a push to this repository.
     envVars:
-    - key: ES_JAVA_OPTS
-      value: "-Xms512m -Xmx512m"
-    - key: discovery.type
-      value: single-node
-    - key: xpack.security.enabled
-      value: false
-    - key: xpack.monitoring.enabled
-      value: false
-    - key: xpack.graph.enabled
-      value: false
-    - key: xpack.watcher.enabled
-      value: false
-    - key: bootstrap.memory_lock
-      value: true
+      - key: ES_JAVA_OPTS
+        value: "-Xms512m -Xmx512m"
+      - key: discovery.type
+        value: single-node
+      - key: xpack.security.enabled
+        value: false
+      - key: xpack.monitoring.enabled
+        value: false
+      - key: xpack.graph.enabled
+        value: false
+      - key: xpack.watcher.enabled
+        value: false
+      - key: bootstrap.memory_lock
+        value: true
 
   - type: worker
     name: sidekiq
@@ -83,14 +73,12 @@ services:
     envVars:
       - fromGroup: rails
       - key: REDIS_HOST
-        fromService:
+        fromRedis:
           name: redis
-          type: pserv
           property: host
       - key: REDIS_PORT
-        fromService:
+        fromRedis:
           name: redis
-          type: pserv
           property: port
 
       - key: ELASTICSEARCH_HOST
@@ -108,6 +96,10 @@ services:
 
 databases:
   - name: forem
+    plan: starter
+
+redises:
+  - name: redis
     plan: starter
 
 envVarGroups:
